@@ -173,3 +173,110 @@ WHERE type = 'Silver';
 --#3
 DELETE FROM practice_delete 
 WHERE value = 150;
+
+--eCommerce Simulation
+--Create 3 tables
+CREATE TABLE users(
+	user_id SERIAL PRIMARY KEY,
+  name VARCHAR(40),
+  email VARCHAR(50)
+);
+
+CREATE TABLE products(
+	product_id SERIAL PRIMARY KEY,
+  name VARCHAR(40),
+  price INT
+);
+
+CREATE TABLE orders(
+    order_id SERIAL PRIMARY KEY,
+	product_id INT REFERENCES products(product_id)
+);
+
+--insert data
+INSERT INTO users(
+	name,
+  email
+)VALUES(
+	'Grey',
+  'greycolor@cool.com'
+);
+
+INSERT INTO users(
+	name,
+  email
+)VALUES(
+	'Olivia',
+  'ocarter@cool.com'
+);
+INSERT INTO users(
+	name,
+  email
+)VALUES(
+	'Ben',
+  'bendog@cool.com'
+);
+
+--products values
+INSERT INTO products(
+	name,
+  price
+)VALUES(
+	'Xbox',
+   300
+);
+
+INSERT INTO products(
+	name,
+  price
+)VALUES(
+	'Nintendo',
+   350
+);
+
+INSERT INTO products(
+	name,
+  price
+)VALUES(
+	'PS4',
+   400
+);
+
+INSERT INTO orders(
+	product_id
+)VALUES (1),(2),(3);
+
+-- Get all products for the first order.
+SELECT * FROM products;
+
+-- Get all orders.
+SELECT * FROM orders o
+JOIN products p ON p.product_id = o.product_id;
+
+-- Get the total cost of an order ( sum the price of all products on an order ).
+SELECT sum(p.price) FROM products p
+JOIN orders o ON o.product_id = p.product_id;
+
+--Add a foreign key reference from order to users
+ALTER TABLE orders 
+ADD COLUMN user_id INTEGER REFERENCES users(user_id);
+
+--Update the orders table to link a user to each other
+INSERT INTO orders(
+    user_id,
+    product_id
+)VALUES(1,1), (1,2), (2,1), (2,2), (2,3), (3,1), (3,3);
+
+--Get all orders for a user
+SELECT u.name, o.order_id AS order_id
+FROM users u
+JOIN orders o ON o.user_id = u.user_id;
+
+--Get how many orders each user has
+SELECT * FROM users;
+SELECT * FROM orders;
+
+SELECT u.name, COUNT(o.order_id)
+FROM users u
+JOIN orders o ON o.user_id = u.user_id
+GROUP BY u.name;
